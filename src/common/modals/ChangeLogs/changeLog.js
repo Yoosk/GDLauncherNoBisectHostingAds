@@ -24,6 +24,11 @@ module.exports = {
       header: 'Ram memory slider now shows the selected amount.',
       content: 'It should be way easier to use.',
       advanced: { cm: '' }
+    },
+    {
+        header: 'Removed those pesky Bisect Hosting Ads!.',
+        content: 'Now you no longer have to have those pesky "partnerships" crammed down your throat!',
+        advanced: { cm: '' }
     }
   ],
   bugfixes: [
