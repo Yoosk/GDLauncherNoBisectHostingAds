@@ -1,7 +1,7 @@
 ## This Is a Fork
 
 Basically MultiMC wasn't allowing me to sign-in to my Mojang account anymore, GDLauncher is, but I don't like ads,
-and other forks that I found are outdated so I'll try my best to remove the ads here, may be updated whenever I feel like it
+and other forks that I found are outdated so I'll try my best to remove the ads here, may be updated whenever I feel like it.
 
 ## Original Project
 For finding the original project quickly in case you want to:
