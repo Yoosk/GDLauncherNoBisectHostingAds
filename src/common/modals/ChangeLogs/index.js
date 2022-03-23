@@ -128,11 +128,6 @@ const ChangeLogs = () => {
     }
   }, [insectionObserverInView]);
 
-  const openBisectModal = () => {
-    dispatch(openModal('BisectHosting'));
-    ga.sendCustomEvent('changelogModalOpenBisect');
-  };
-
   const isChristmas =
     new Date().getMonth() === 11 &&
     [21, 22, 23, 24, 25, 26, 27, 28, 29].includes(new Date().getDate());
