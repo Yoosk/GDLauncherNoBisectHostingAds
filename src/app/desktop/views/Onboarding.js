@@ -10,7 +10,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import backgroundVideo from '../../../common/assets/onboarding.webm';
 import { _getCurrentAccount } from '../../../common/utils/selectors';
-import BisectHosting from '../../../ui/BisectHosting';
 import KoFiButton from '../../../common/assets/ko-fi.png';
 import { openModal } from '../../../common/reducers/modals/actions';
 
@@ -129,44 +128,6 @@ const Home = () => {
         </div>
       </div>
       <div
-        ref={thirdSlideRef}
-        css={`
-          height: 100%;
-          width: 100%;
-          background: ${props => props.theme.palette.grey[700]};
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        `}
-      >
-        <div
-          css={`
-            font-size: 30px;
-            font-weight: 600;
-            text-align: center;
-            margin: 20% 10%;
-          `}
-        >
-          GDlauncher is completely free and open source. <br />
-          If you want to support us, consider renting a server on BisectHosting,
-          our official partner!
-          <br />
-          <br />
-          <div
-            css={`
-              cursor: pointer;
-            `}
-          >
-            <BisectHosting
-              showPointerCursor
-              size={100}
-              onClick={() => dispatch(openModal('BisectHosting'))}
-            />
-          </div>
-        </div>
-      </div>
-      <div
         ref={forthSlideRef}
         css={`
           height: 100%;
@@ -186,7 +147,7 @@ const Home = () => {
             margin: 20%;
           `}
         >
-          Or you can also support us through Ko-Fi.
+          You can support the original devs through Ko-Fi.
           <div
             css={`
               margin: 40px;
