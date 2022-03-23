@@ -41,29 +41,6 @@ const InstanceStartupAd = ({ instanceName }) => {
             `}
           />
         </span>
-        <div
-          css={`
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            & > * {
-              margin: 0 20px;
-            }
-          `}
-        >
-          <div>
-            <span
-              css={`
-                font-size: 70px;
-                color: ${({ theme }) => theme.palette.colors.red};
-              `}
-            >
-              &#10084;
-            </span>
-            <div>Thank you!</div>
-          </div>
-        </div>
       </div>
     </Modal>
   );
