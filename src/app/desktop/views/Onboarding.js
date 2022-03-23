@@ -46,12 +46,9 @@ const Home = () => {
         scrollToRef(secondSlideRef);
         break;
       case 2:
-        scrollToRef(thirdSlideRef);
-        break;
-      case 3:
         scrollToRef(forthSlideRef);
         break;
-      case 4:
+      case 3:
         scrollToRef(fifthSlideRef);
         break;
       default:
