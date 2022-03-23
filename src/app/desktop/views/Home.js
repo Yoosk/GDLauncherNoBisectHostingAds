@@ -57,10 +57,6 @@ const Home = () => {
         dispatch(updateLastUpdateVersion(appVersion));
         dispatch(openModal('ChangeLogs'));
       }
-      const { data } = await axios.get(
-        'https://api.gdlauncher.com/announcement'
-      );
-      setAnnoucement(data || null);
     };
 
     init();
