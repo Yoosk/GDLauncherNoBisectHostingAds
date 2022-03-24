@@ -646,8 +646,8 @@ if (process.env.REACT_APP_RELEASE_TYPE === 'setup') {
     !allowUnstableReleases && app.getVersion().includes('beta');
   autoUpdater.allowPrerelease = allowUnstableReleases;
   autoUpdater.setFeedURL({
-    owner: 'gorilla-devs',
-    repo: 'GDLauncher',
+    owner: 'natsudragneelthefiredragon',
+    repo: 'GDLauncherNoBisectHostingAds',
     provider: 'github'
   });
 

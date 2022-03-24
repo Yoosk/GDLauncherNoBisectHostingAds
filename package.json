@@ -14,11 +14,11 @@
     "webpack"
   ],
   "bugs": {
-    "url": "https://github.com/gorilla-devs/GDLauncher/issues"
+    "url": "https://github.com/natsudragneelthefiredragon/GDLauncherNoBisectHostingAds/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gorilla-devs/GDLauncher.git"
+    "url": "git+https://github.com/natsudragneelthefiredragon/GDLauncherNoBisectHostingAds.git"
   },
   "license": "GPL-3.0",
   "author": {
