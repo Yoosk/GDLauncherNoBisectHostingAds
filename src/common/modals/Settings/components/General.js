@@ -194,7 +194,17 @@ const General = () => {
     Object.keys(isPlaying).length > 0;
 
   useEffect(() => {
+    ipcRenderer.invoke('getAppVersion').then(setVersion).catch(console.error);
     extractFace(currentAccount.skin).then(setProfileImage).catch(console.error);
+    ipcRenderer
+      .invoke('getAppdataPath')
+      .then(appData =>
+        fsa
+          .readFile(path.join(appData, 'gdlauncher_next', 'rChannel'))
+          .then(v => setReleaseChannel(parseInt(v.toString(), 10)))
+          .catch(() => setReleaseChannel(0))
+      )
+      .catch(console.error);
   }, []);
 
   const clearSharedData = async () => {
@@ -307,6 +317,31 @@ const General = () => {
           </div>
         </PersonalDataContainer>
       </PersonalData>
+      <Title>Release Channel</Title>
+      <Content>
+        <p>
+          Stable updates once a month. Beta updates more often, but it may have
+          more bugs.
+        </p>
+        <Select
+          css={`
+            width: 100px;
+          `}
+          onChange={async e => {
+            const appData = await ipcRenderer.invoke('getAppdataPath');
+            setReleaseChannel(e);
+            await fsa.writeFile(
+              path.join(appData, 'gdlauncher_next', 'rChannel'),
+              e.toString()
+            );
+          }}
+          value={releaseChannel}
+          virtual={false}
+        >
+          <Select.Option value={0}>Stable</Select.Option>
+          <Select.Option value={1}>Beta</Select.Option>
+        </Select>
+      </Content>
       <Title>
         Concurrent Downloads &nbsp; <FontAwesomeIcon icon={faTachometerAlt} />
       </Title>

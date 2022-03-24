@@ -3311,3 +3311,178 @@ export const initLatestMods = instanceName => {
     dispatch(updateLatestModManifests(manifestsObj));
   };
 };
+
+export const isNewVersionAvailable = async () => {
+  const { data: latestReleases } = await axios.get(
+    'https://api.github.com/repos/gorilla-devs/GDLauncher/releases?per_page=10'
+  );
+
+  const latestPrerelease = latestReleases.find(v => v.prerelease);
+  const latestStablerelease = latestReleases.find(v => !v.prerelease);
+
+  const appData = await ipcRenderer.invoke('getAppdataPath');
+
+  let releaseChannel = 0;
+
+  try {
+    const rChannel = await fs.readFile(
+      path.join(appData, 'gdlauncher_next', 'rChannel')
+    );
+    releaseChannel = parseInt(rChannel.toString(), 10);
+  } catch {
+    // swallow error
+  }
+
+  const v = await ipcRenderer.invoke('getAppVersion');
+
+  const isAppUpdated = r => gte(v, r.tag_name);
+  if (
+    releaseChannel === 0 &&
+    (prerelease(v) || !isAppUpdated(latestStablerelease))
+  ) {
+    return latestStablerelease;
+  }
+  if (releaseChannel !== 0) {
+    if (
+      !isAppUpdated(latestStablerelease) &&
+      (major(latestStablerelease.tag_name) > major(v) ||
+        minor(latestStablerelease.tag_name) > minor(v) ||
+        patch(latestStablerelease.tag_name) > patch(v))
+    ) {
+      return latestStablerelease;
+    }
+    if (latestPrerelease && !isAppUpdated(latestPrerelease)) {
+      return latestPrerelease;
+    }
+  }
+
+  return false;
+};
+
+export const checkForPortableUpdates = () => {
+  return async (dispatch, getState) => {
+    const state = getState();
+    const baseFolder = await ipcRenderer.invoke('getExecutablePath');
+
+    const tempFolder = path.join(_getTempPath(state), `update`);
+
+    const newVersion = await isNewVersionAvailable();
+
+    // Latest version has a value only if the user is not using the latest
+    if (newVersion) {
+      const baseAssetUrl = `https://github.com/gorilla-devs/GDLauncher/releases/download/${newVersion?.tag_name}`;
+      const { data: latestManifest } = await axios.get(
+        `${baseAssetUrl}/${process.platform}_latest.json`
+      );
+      // Cleanup all files that are not required for the update
+      await makeDir(tempFolder);
+
+      const filesToUpdate = (
+        await Promise.all(
+          latestManifest.map(async file => {
+            const fileOnDisk = path.join(baseFolder, ...file.file);
+            let needsDownload = false;
+            try {
+              // Check if files exists
+              await originalFs.promises.stat(fileOnDisk);
+
+              const fileOnDiskSha1 = await getFileHash(fileOnDisk);
+
+              if (fileOnDiskSha1.toString() !== file.sha1) {
+                throw new Error('SHA1 Mismatch', file.compressedFile);
+              }
+            } catch (err) {
+              needsDownload = true;
+            }
+            if (needsDownload) {
+              return file;
+            }
+            return null;
+          })
+        )
+      ).filter(_ => _);
+
+      const tempFiles = await getFilesRecursive(tempFolder);
+      await Promise.all(
+        tempFiles.map(async tempFile => {
+          const tempFileRelativePath = path.relative(tempFolder, tempFile);
+          const isNeeded = filesToUpdate.find(
+            v => path.join(...v.file) === tempFileRelativePath
+          );
+          if (!isNeeded) {
+            await fse.remove(tempFile);
+          }
+        })
+      );
+
+      await pMap(
+        filesToUpdate,
+        async file => {
+          const compressedFile = path.join(tempFolder, file.compressedFile);
+          const destinationPath = path.join(tempFolder, ...file.file);
+          try {
+            // Check if files exists
+            await originalFs.promises.access(destinationPath);
+            const fileSha1 = await getFileHash(destinationPath);
+            if (fileSha1.toString() !== file.sha1) {
+              throw new Error('SHA1 mismatch', file.compressedFile);
+            }
+          } catch {
+            try {
+              try {
+                await originalFs.promises.access(compressedFile);
+                const fileSha1 = await getFileHash(compressedFile);
+                if (fileSha1.toString() === file.sha1) {
+                  return;
+                }
+              } catch {
+                // Nothing, just go ahead and download since sha1 mismatch
+              }
+
+              // Try to download 5 times
+              const maxTries = 5;
+              let sha1Matched = false;
+              while (maxTries <= 5 && !sha1Matched) {
+                // eslint-disable-next-line
+                await downloadFile(
+                  compressedFile,
+                  `${baseAssetUrl}/${file.compressedFile}`
+                );
+                // eslint-disable-next-line
+                const fileSha1 = await getFileHash(compressedFile);
+                if (fileSha1.toString() === file.compressedSha1) {
+                  sha1Matched = true;
+                }
+              }
+
+              if (!sha1Matched) {
+                throw new Error(`Could not download ${file.compressedSha1}`);
+              }
+
+              const gzip = zlib.createGunzip();
+              const source = originalFs.createReadStream(compressedFile);
+
+              await makeDir(path.dirname(destinationPath));
+              const destination = originalFs.createWriteStream(destinationPath);
+
+              await new Promise((resolve, reject) => {
+                pipeline(source, gzip, destination, err => {
+                  if (err) {
+                    reject(err);
+                  }
+                  resolve();
+                });
+              });
+
+              await fse.remove(compressedFile);
+            } catch (err) {
+              throw new Error(err);
+            }
+          }
+        },
+        { concurrency: 3 }
+      );
+    }
+    return newVersion;
+  };
+};

@@ -46,6 +46,7 @@
             Delete "$0\Preferences"
             Delete "$0\TransportSecurity"
             Delete "$0\Config"
+            Delete "$0\rChannel"
             
             FileClose $4
 
