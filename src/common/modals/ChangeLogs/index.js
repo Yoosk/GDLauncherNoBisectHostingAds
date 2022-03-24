@@ -186,21 +186,6 @@ const ChangeLogs = () => {
           />
           <div
             css={`
-              margin-top: 20px;
-              color: ${props => props.theme.palette.text.third};
-              span {
-                color: ${props => props.theme.palette.text.primary};
-                cursor: pointer;
-                text-decoration: underline;
-              }
-            `}
-          >
-            If you appreciate our work, please consider supporting us through a
-            donation or grab a server from our official partner{' '}
-            <span onClick={openBisectModal}>BisectHosting</span>
-          </div>
-          <div
-            css={`
               display: flex;
               align-items: center;
               justify-content: start;
