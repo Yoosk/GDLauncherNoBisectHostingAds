@@ -163,7 +163,7 @@ try {
 
 app.setPath('userData', path.join(app.getPath('appData'), 'gdlauncher_next'));
 
-let allowUnstableReleases = true;
+let allowUnstableReleases = false;
 const releaseChannelExists = fss.existsSync(
   path.join(app.getPath('userData'), 'rChannel')
 );
@@ -175,7 +175,7 @@ if (releaseChannelExists) {
   if (releaseId === 1) {
     allowUnstableReleases = true;
   }
-} else if (!releaseChannelExists) {
+} else if (!releaseChannelExists && app.getVersion().includes('beta')) {
   fss.writeFileSync(path.join(app.getPath('userData'), 'rChannel'), '1');
   allowUnstableReleases = true;
 }
