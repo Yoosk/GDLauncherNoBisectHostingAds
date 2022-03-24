@@ -10,7 +10,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import backgroundVideo from '../../../common/assets/onboarding.webm';
 import { _getCurrentAccount } from '../../../common/utils/selectors';
-import BisectHosting from '../../../ui/BisectHosting';
 import KoFiButton from '../../../common/assets/ko-fi.png';
 import { openModal } from '../../../common/reducers/modals/actions';
 
@@ -47,12 +46,9 @@ const Home = () => {
         scrollToRef(secondSlideRef);
         break;
       case 2:
-        scrollToRef(thirdSlideRef);
-        break;
-      case 3:
         scrollToRef(forthSlideRef);
         break;
-      case 4:
+      case 3:
         scrollToRef(fifthSlideRef);
         break;
       default:
@@ -126,44 +122,6 @@ const Home = () => {
           `}
         >
           {account.selectedProfile.name}, welcome to GDLauncher!
-        </div>
-      </div>
-      <div
-        ref={thirdSlideRef}
-        css={`
-          height: 100%;
-          width: 100%;
-          background: ${props => props.theme.palette.grey[700]};
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        `}
-      >
-        <div
-          css={`
-            font-size: 30px;
-            font-weight: 600;
-            text-align: center;
-            margin: 20% 10%;
-          `}
-        >
-          GDlauncher is completely free and open source. <br />
-          If you want to support us, consider renting a server on BisectHosting,
-          our official partner!
-          <br />
-          <br />
-          <div
-            css={`
-              cursor: pointer;
-            `}
-          >
-            <BisectHosting
-              showPointerCursor
-              size={100}
-              onClick={() => dispatch(openModal('BisectHosting'))}
-            />
-          </div>
         </div>
       </div>
       <div
