@@ -178,6 +178,9 @@ if (releaseChannelExists) {
 } else if (!releaseChannelExists && app.getVersion().includes('beta')) {
   fss.writeFileSync(path.join(app.getPath('userData'), 'rChannel'), '1');
   allowUnstableReleases = true;
+} else {
+  fss.writeFileSync(path.join(app.getPath('userData'), 'rChannel'), '1');
+  allowUnstableReleases = true;
 }
 
 if (
