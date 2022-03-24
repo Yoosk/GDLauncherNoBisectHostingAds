@@ -128,11 +128,6 @@ const ChangeLogs = () => {
     }
   }, [insectionObserverInView]);
 
-  const openBisectModal = () => {
-    dispatch(openModal('BisectHosting'));
-    ga.sendCustomEvent('changelogModalOpenBisect');
-  };
-
   const isChristmas =
     new Date().getMonth() === 11 &&
     [21, 22, 23, 24, 25, 26, 27, 28, 29].includes(new Date().getDate());
@@ -189,21 +184,6 @@ const ChangeLogs = () => {
             src={isChristmas ? UpdateIllustrationChristmas : UpdateIllustration}
             alt="New Version"
           />
-          <div
-            css={`
-              margin-top: 20px;
-              color: ${props => props.theme.palette.text.third};
-              span {
-                color: ${props => props.theme.palette.text.primary};
-                cursor: pointer;
-                text-decoration: underline;
-              }
-            `}
-          >
-            If you appreciate our work, please consider supporting us through a
-            donation or grab a server from our official partner{' '}
-            <span onClick={openBisectModal}>BisectHosting</span>
-          </div>
           <div
             css={`
               display: flex;
