@@ -183,7 +183,9 @@ const General = () => {
   const [moveUserData, setMoveUserData] = useState(false);
   const [deletingInstances, setDeletingInstances] = useState(false);
   const [loadingMoveUserData, setLoadingMoveUserData] = useState(false);
+  const [version, setVersion] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
+  const [releaseChannel, setReleaseChannel] = useState(null);
 
   const dispatch = useDispatch();
 
@@ -192,7 +194,17 @@ const General = () => {
     Object.keys(isPlaying).length > 0;
 
   useEffect(() => {
+    ipcRenderer.invoke('getAppVersion').then(setVersion).catch(console.error);
     extractFace(currentAccount.skin).then(setProfileImage).catch(console.error);
+    ipcRenderer
+      .invoke('getAppdataPath')
+      .then(appData =>
+        fsa
+          .readFile(path.join(appData, 'gdlauncher_next', 'rChannel'))
+          .then(v => setReleaseChannel(parseInt(v.toString(), 10)))
+          .catch(() => setReleaseChannel(0))
+      )
+      .catch(console.error);
   }, []);
 
   const clearSharedData = async () => {
@@ -305,6 +317,31 @@ const General = () => {
           </div>
         </PersonalDataContainer>
       </PersonalData>
+      <Title>Release Channel</Title>
+      <Content>
+        <p>
+          Stable updates once a month. Beta updates more often, but it may have
+          more bugs.
+        </p>
+        <Select
+          css={`
+            width: 100px;
+          `}
+          onChange={async e => {
+            const appData = await ipcRenderer.invoke('getAppdataPath');
+            setReleaseChannel(e);
+            await fsa.writeFile(
+              path.join(appData, 'gdlauncher_next', 'rChannel'),
+              e.toString()
+            );
+          }}
+          value={releaseChannel}
+          virtual={false}
+        >
+          <Select.Option value={0}>Stable</Select.Option>
+          <Select.Option value={1}>Beta</Select.Option>
+        </Select>
+      </Content>
       <Title>
         Concurrent Downloads &nbsp; <FontAwesomeIcon icon={faTachometerAlt} />
       </Title>
@@ -559,6 +596,52 @@ const General = () => {
             size={200}
             onClick={() => dispatch(openModal('ChangeLogs'))}
           />{' '}
+          <div
+            css={`
+              margin-left: 10px;
+            `}
+          >
+            v {version}
+          </div>
+        </div>
+        <p>
+          {updateAvailable
+            ? 'There is an update available to be installed. Click on update to install it and restart the launcher.'
+            : 'You’re currently on the latest version. We automatically check for updates and we will inform you whenever one is available.'}
+        </p>
+        <div
+          css={`
+            margin-top: 20px;
+            height: 36px;
+            display: flex;
+            flex-direction: row;
+          `}
+        >
+          {updateAvailable ? (
+            <Button
+              onClick={() =>
+                ipcRenderer.invoke('installUpdateAndQuitOrRestart')
+              }
+              css={`
+                margin-right: 10px;
+              `}
+              type="primary"
+            >
+              Update &nbsp;
+              <FontAwesomeIcon icon={faDownload} />
+            </Button>
+          ) : (
+            <div
+              css={`
+                width: 96px;
+                height: 36px;
+                padding: 6px 8px;
+              `}
+            >
+              Up to date
+            </div>
+          )}
+        </div>
       </LauncherVersion>
     </>
   );
